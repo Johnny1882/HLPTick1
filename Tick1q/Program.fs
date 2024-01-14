@@ -7,8 +7,47 @@
 /// answer to Tick1
 // the header given here is correct.
 let polarToCartesianApprox (r,theta) n = 
-    failwithf "Tick1 not yet implemented" // replace this line with your top-level implementation
+    // failwithf "Tick1 not yet implemented" // replace this line with your top-level implementation
+    // generate list of 0 to n⇒map a function over list⇒Sum all the elements up with a reduce
 
+    let fact n =
+        if n = 0
+        then 1.0
+        else List.reduce (*) [1.0..float n]
+    
+    
+    let sinTerm x n=
+        let n = (n+1)/2
+        if n = 0 then 0.0
+        else
+            let initlist = [for i in 1..n -> if i % 2 = 0 then -x else x]
+
+            // printfn "initlist: %A" initlist
+            // let tmp = initlist |> List.mapi (fun index number -> number ** (2.0 * float index + 1.0) / fact (2 * index + 1))
+            // printfn "initlist: %A" tmp
+
+            initlist 
+                |> List.mapi (fun index number -> number ** (2.0 * float index + 1.0) / fact (2 * index + 1))
+                |> List.reduce (+)
+    
+    let cosTerm x n=
+        let n = n/2
+        if n = 0 then 1.0
+        else
+            let initlist = [for i in 0..n -> x]
+
+            // printfn "initlist: %A" initlist
+            // let tmp = initlist |> List.mapi (fun index number -> if index % 2 <> 0 then -1.0 * number ** (2.0 * float index) / fact (2 * index) else number ** (2.0 * float index) / fact (2 * index))
+            // printfn "initlist: %A" tmp
+
+            initlist 
+                |> List.mapi (fun index number -> if index % 2 <> 0 then -1.0 * number ** (2.0 * float index) / fact (2 * index) else number ** (2.0 * float index) / fact (2 * index))
+                |> List.reduce (+)
+    
+    (r * cosTerm theta n, r * sinTerm theta n)
+        
+        
+    
 
 //--------------------testbench code - DO NOT CHANGE-----------------------------//
 
@@ -59,4 +98,8 @@ let testBench testData testFun =
 [<EntryPoint>]
 let main argv =
     testBench testBenchData polarToCartesianApprox
+
+    // let a = polarToCartesianApprox (1.0, 1.0) 2 // should be (0.5, 1.0)
+    // printfn "The tuple is: (%f, %f)" (fst a) (snd a)
+
     0 // return an integer exit code
